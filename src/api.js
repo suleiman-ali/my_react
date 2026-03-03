@@ -1,7 +1,10 @@
 import axios from 'axios';
 
-const DEFAULT_API_URL = import.meta.env.PROD ? '/api' : 'http://localhost:8000/api';
-const API_URL = import.meta.env.VITE_API_URL || DEFAULT_API_URL;
+// For production, use VITE_API_URL environment variable
+// Set VITE_API_URL in Vercel to your Render backend URL (e.g., https://your-backend.onrender.com)
+const API_URL = import.meta.env.VITE_API_URL 
+  ? `${import.meta.env.VITE_API_URL}/api` 
+  : 'http://localhost:8000/api';
 
 // Create axios instance
 const api = axios.create({
