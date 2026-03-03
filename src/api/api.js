@@ -1,10 +1,11 @@
 import axios from 'axios';
 
-// For production, use VITE_API_URL environment variable
-// Set VITE_API_URL in Vercel to your Render backend URL (e.g., https://your-backend.onrender.com)
-const API_URL = import.meta.env.VITE_API_URL 
-  ? `${import.meta.env.VITE_API_URL}/api` 
-  : 'http://localhost:8000/api';
+// Check if we're in production (Vite sets NODE_ENV to 'production' in production builds)
+const isProduction = import.meta.env.MODE === 'production' || import.meta.env.NODE_ENV === 'production';
+
+// In production on Vercel, use /api which gets proxied to the backend via vercel.json
+// In other cases, use localhost for development
+const API_URL = isProduction ? '/api' : 'http://localhost:8000/api';
 
 // Create axios instance
 const api = axios.create({
