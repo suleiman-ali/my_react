@@ -1,9 +1,9 @@
 import axios from 'axios';
 
-// Backend URL - change this to your deployed backend URL
-const BACKEND_URL = 'https://my-system-1-8al8.onrender.com';
-
-const API_URL = `${BACKEND_URL}/api`;
+const DEFAULT_API_URL = import.meta.env.PROD
+  ? 'https://my-system-udnx.onrender.com/api'
+  : 'http://localhost:8000/api';
+const API_URL = (import.meta.env.VITE_API_URL || DEFAULT_API_URL).replace(/\/+$/, '');
 
 // Create axios instance
 const api = axios.create({
