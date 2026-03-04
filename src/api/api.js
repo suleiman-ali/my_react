@@ -1,9 +1,9 @@
 import axios from 'axios';
 
 const DEFAULT_API_URL = import.meta.env.PROD
-  ? 'https://my-system-udnx.onrender.com/api'
+  ? 'https://my-system-backend.onrender.com/api'
   : 'http://localhost:8000/api';
-const FALLBACK_API_URL = 'https://my-system-udnx.onrender.com/api';
+const FALLBACK_API_URL = 'https://my-system-backend.onrender.com/api';
 
 const configuredApiUrl = (import.meta.env.VITE_API_URL || '').trim();
 const useConfiguredUrl =
