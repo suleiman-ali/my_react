@@ -1,13 +1,14 @@
 import axios from 'axios';
 
-const DEFAULT_API_URL = import.meta.env.PROD ? '/api' : 'http://localhost:8000/api';
+const DEFAULT_API_URL = import.meta.env.PROD
+  ? 'https://my-system-udnx.onrender.com/api'
+  : 'http://localhost:8000/api';
 const FALLBACK_API_URL = 'https://my-system-udnx.onrender.com/api';
 
 const configuredApiUrl = (import.meta.env.VITE_API_URL || '').trim();
 const useConfiguredUrl =
   configuredApiUrl.startsWith('http://') ||
-  configuredApiUrl.startsWith('https://') ||
-  configuredApiUrl.startsWith('/');
+  configuredApiUrl.startsWith('https://');
 const API_URL = (useConfiguredUrl ? configuredApiUrl : DEFAULT_API_URL).replace(/\/+$/, '');
 
 // Create axios instance

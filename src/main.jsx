@@ -16,9 +16,18 @@ ReactDOM.createRoot(document.getElementById('root')).render(
 )
 
 if (import.meta.env.PROD && 'serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js').catch((error) => {
-      console.error('Service worker registration failed:', error);
-    });
+  const enableSw = import.meta.env.VITE_ENABLE_SW === 'true';
+
+  window.addEventListener('load', async () => {
+    if (enableSw) {
+      navigator.serviceWorker.register('/sw.js').catch((error) => {
+        console.error('Service worker registration failed:', error);
+      });
+      return;
+    }
+
+    // Keep service worker disabled by default to prevent stale cached bundles.
+    const regs = await navigator.serviceWorker.getRegistrations();
+    await Promise.all(regs.map((reg) => reg.unregister()));
   });
 }
