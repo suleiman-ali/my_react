@@ -1,13 +1,19 @@
 import axios from 'axios';
 
-const DEFAULT_API_URL = import.meta.env.PROD
-  ? 'https://my-system-udnx.onrender.com/api'
-  : 'http://localhost:8000/api';
-const API_URL = (import.meta.env.VITE_API_URL || DEFAULT_API_URL).replace(/\/+$/, '');
+const DEFAULT_API_URL = import.meta.env.PROD ? '/api' : 'http://localhost:8000/api';
+const FALLBACK_API_URL = 'https://my-system-udnx.onrender.com/api';
+
+const configuredApiUrl = (import.meta.env.VITE_API_URL || '').trim();
+const useConfiguredUrl =
+  configuredApiUrl.startsWith('http://') ||
+  configuredApiUrl.startsWith('https://') ||
+  configuredApiUrl.startsWith('/');
+const API_URL = (useConfiguredUrl ? configuredApiUrl : DEFAULT_API_URL).replace(/\/+$/, '');
 
 // Create axios instance
 const api = axios.create({
   baseURL: API_URL,
+  timeout: 20000,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -33,13 +39,19 @@ api.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
+    if (!error.response && import.meta.env.PROD && !originalRequest._networkRetry) {
+      originalRequest._networkRetry = true;
+      originalRequest.baseURL = FALLBACK_API_URL;
+      return api.request(originalRequest);
+    }
+
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
 
       try {
         const refreshToken = localStorage.getItem('refresh_token');
         if (refreshToken) {
-          const response = await axios.post(`${API_URL}/auth/token/refresh/`, {
+          const response = await api.post('/auth/token/refresh/', {
             refresh: refreshToken,
           });
 

@@ -38,7 +38,21 @@ const Register = () => {
       await register(formData);
       navigate('/');
     } catch (err) {
-      const errorMessage = err.response?.data ? JSON.stringify(err.response.data) : 'Registration failed. Please try again.';
+      const serverData = err.response?.data;
+      let errorMessage = 'Registration failed. Please try again.';
+      if (serverData) {
+        if (typeof serverData === 'string') {
+          errorMessage = serverData;
+        } else if (serverData.detail) {
+          errorMessage = serverData.detail;
+        } else {
+          errorMessage = Object.entries(serverData)
+            .map(([key, value]) => `${key}: ${Array.isArray(value) ? value.join(', ') : value}`)
+            .join(' | ');
+        }
+      } else if (err.message) {
+        errorMessage = err.message;
+      }
       setError(errorMessage);
     } finally {
       setLoading(false);
